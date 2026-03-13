@@ -1,6 +1,6 @@
 # Void — Keybinding & Command Reference
 
-> **Version:** 0.3.1  
+> **Version:** 0.3.0  
 > **Authors:** Bailey Beber and Soumalya Das
 
 ---

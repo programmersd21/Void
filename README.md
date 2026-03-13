@@ -1,7 +1,7 @@
 # Void — A Modern Cross-Platform Terminal Code Editor
 
 > **Authors:** Bailey Beber and Soumalya Das  
-> **Version:** 0.3.1
+> **Version:** 0.3.0
 
 ![Void Editor](assets/BLACKVOID.gif)
 
@@ -439,7 +439,7 @@ pyproject.toml            Package metadata and entry point
 
 ## 🐛 Changelog
 
-### v0.3.1 — Theme System Overhaul
+### v0.3.0 — Theme System Overhaul
 
 - **Fixed:** Theme switching via `:theme` command and the settings panel now works correctly. Previously, `DARK_THEMES`, `LIGHT_THEMES`, and `theme_css_variables()` were imported by `void.py` but did not exist in `theme_engine.py`, causing an `ImportError` on startup.
 - **Fixed:** CSS variable names corrected from `$background`/`$foreground` to `$void-bg`/`$void-fg` etc., matching the `$void-*` variables used in `VoidApp.CSS`. This was the core reason themes appeared to switch (config saved) but the UI never updated visually.

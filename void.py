@@ -5,7 +5,7 @@
 
 """
 Void Editor — cross-platform terminal code editor
-Authors: Bailey Beber and Soumalya Das  |  Version: 0.3.1
+Authors: Bailey Beber and Soumalya Das  |  Version: 0.3.0
 
 Theme system: themes inject CSS variables via get_css_variables() +
 refresh_css() so every UI component updates instantly at runtime.
@@ -42,7 +42,7 @@ from config.colors import (COLOR_KEYWORD, COLOR_STRING, COLOR_COMMENT,
     COLOR_NUMBER, COLOR_BUILTIN, COLOR_DECORATOR, COLOR_NORMAL,
     COLOR_DEFINITION, COLOR_FUNC_NAME, COLOR_MATCH_BOOL)
 
-VERSION = "0.3.1"
+VERSION = "0.3.0"
 AUTHORS = "Bailey Beber and Soumalya Das"
 RECENT_FILES_PATH = os.path.expanduser("~/.void_recent_files.json")
 

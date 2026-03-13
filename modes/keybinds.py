@@ -21,16 +21,18 @@ from modes.search import search_state, search_prompt
 from ui.splash import SplashScreen
 from modes.visual import visual_state, visual_delete, visual_yank, visual_change, visual_indent
 from ui.display import draw_status_bar
+from config.settings import settings
+from config.settings import create_default_config, CONFIG_PATH
 from ui.aesthetics import hud
 from config.keys import (KEY_ESCAPE, KEY_CTRL_T, KEY_CTRL_F, KEY_CTRL_V, KEY_CTRL_D,
                   KEY_CTRL_U, KEY_ENTER, KEY_BACKSPACE_CODES, KEY_DELETE_CODES,
                   NEW_FILE_NAME, INDENT_WIDTH)
 
 
-# ──────────────────────────────────
+# ------------------------------
 #  EDITOR STATE
 #  Bundles mode and focus flags
-# ──────────────────────────────────
+# ------------------------------ 
 
 class EditorState:
     def __init__(self):
@@ -42,9 +44,9 @@ class EditorState:
         self._insert_snapshot_saved = False  # for batched undo
 
 
-# ──────────────────────────────────
+# ---------
 #  HELPERS
-# ──────────────────────────────────
+# --------- 
 
 def right(window, buffer, cursor):
     cursor.right(buffer)
@@ -59,8 +61,11 @@ def left(window, buffer, cursor):
 def save(filename, buffer):
     if not filename or filename in (NEW_FILE_NAME,):
         return False
+    content = "\n".join(buffer.lines)
+    if settings["trailing_newline"]:
+        content += "\n"
     with open(filename, "w") as f:
-        f.write("\n".join(buffer.lines))
+        f.write(content)
     return True
 
 # Shared helper for opening a file into a new tab, returns the new tab
@@ -87,7 +92,6 @@ def open_file_in_tab(filepath, tab_manager, cursor, window):
     tab_manager.active_tab.restore_cursor(cursor, window)
     return new_tab
 
-# Switch tabs and reset cross-tab state
 def switch_tab(tab_manager, cursor, window, direction):
     tab_manager.active_tab.save_cursor(cursor, window)
     if direction == "next":
@@ -103,9 +107,9 @@ def switch_tab(tab_manager, cursor, window, direction):
     hud.reset_timer()
 
 
-# ──────────────────────────────────
+# --------------
 #  COMMAND MODE
-# ──────────────────────────────────
+# -------------- 
 
 def command_mode(stdscr, window, buffer, filename, modified, tab_manager, cursor):
     stdscr.timeout(-1)
@@ -178,14 +182,17 @@ def command_mode(stdscr, window, buffer, filename, modified, tab_manager, cursor
             save(new_filename, buffer)
             SplashScreen.add_recent_file(new_filename)
             modified = False
+    elif cmd == "config":
+        create_default_config()
+        open_file_in_tab(CONFIG_PATH, tab_manager, cursor, window)
 
     stdscr.timeout(100)
     return modified
 
 
-# ──────────────────────────────────
+# --------------------
 #  MAIN KEY DISPATCH
-# ──────────────────────────────────
+# -------------------- 
 
 def handle_keypress(k, stdscr, window, buffer, cursor, filename, state, terminal, tab_manager, file_finder):
     tab = tab_manager.active_tab
@@ -231,9 +238,9 @@ def handle_keypress(k, stdscr, window, buffer, cursor, filename, state, terminal
             file_finder.visible = False
         return
         
-    # ──────────────────────────
+    # --------------------------
     #  NORMAL MODE
-    # ──────────────────────────
+    # -------------------------- 
     if state.mode == "normal":
         if k == ":":
             state.mode = "command"
@@ -338,9 +345,9 @@ def handle_keypress(k, stdscr, window, buffer, cursor, filename, state, terminal
                 if mode_change == "insert":
                     state._insert_snapshot_saved = False
                     print("\033[6 q", end="", flush=True)
-    # ──────────────────────────
-    #  INSERT MODE (batched undo)
-    # ──────────────────────────
+    # -------------------------- 
+    #  INSERT MODE - batched undo
+    # --------------------------- 
     elif state.mode == "insert":
         if k == KEY_ESCAPE:
             state.mode = "normal"
@@ -363,7 +370,13 @@ def handle_keypress(k, stdscr, window, buffer, cursor, filename, state, terminal
             if not state._insert_snapshot_saved:
                 save_snapshot(buffer, cursor, tab)
                 state._insert_snapshot_saved = True
-            auto_indent(buffer, cursor, window)
+            if settings["auto_indent"]:
+                auto_indent(buffer, cursor, window)
+            else:
+                buffer.split(cursor)
+                cursor.row += 1
+                cursor.col = 0
+                window.down(buffer, cursor)
             state.modified = True
         elif k in KEY_DELETE_CODES:
             if not state._insert_snapshot_saved:
@@ -390,7 +403,7 @@ def handle_keypress(k, stdscr, window, buffer, cursor, filename, state, terminal
                     buffer.delete(cursor)
                 state.modified = True
 
-        elif k in ("(", "[", "{", '"', "'"):
+        elif settings["auto_pair"] and k in ("(", "[", "{", '"', "'"):
             if not state._insert_snapshot_saved:
                 save_snapshot(buffer, cursor, tab)
                 state._insert_snapshot_saved = True
@@ -407,9 +420,9 @@ def handle_keypress(k, stdscr, window, buffer, cursor, filename, state, terminal
                 right(window, buffer, cursor)
             state.modified = True
 
-    # ──────────────────────────
-    #  VISUAL MODES
-    # ──────────────────────────
+    # ---------------
+    #  VISUAL MODE
+    # ---------------
     elif state.mode in ("visual", "visual-line", "visual-block"):
         if k == KEY_ESCAPE:
             visual_state.reset()

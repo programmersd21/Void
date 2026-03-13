@@ -1,21 +1,8 @@
-# Copyright 2025 Bailey Lane-Beber
+# Copyright 2026 Bailey Beber and Soumalya Das
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the Apache License, Version 2.0 (the "License")
 
-# ──────────────────────────────────
-#  NAMED CONSTANTS
-#  Replaces magic strings throughout
-# ──────────────────────────────────
+from config.settings import settings
 
 # Control key codes
 KEY_ESCAPE = "\x1b"
@@ -28,16 +15,18 @@ KEY_CTRL_V = "\x16"
 KEY_CTRL_N = "\x0e"
 KEY_CTRL_P = "\x10"
 KEY_ENTER = "\n"
-KEY_BACKSPACE_CODES = ("KEY_BACKSPACE", "\x7f")
+KEY_BACKSPACE_CODES = ("KEY_BACKSPACE", "\x7f", "\x08")
 KEY_DELETE_CODES = ("KEY_DC", KEY_CTRL_D)
 
-# Editor defaults
-INDENT_WIDTH = 4
+# Editor defaults from config
+INDENT_WIDTH = settings.get("indent_width", 4)
 INDENT_STR = " " * INDENT_WIDTH
-MAX_UNDO = 100
-TERMINAL_HEIGHT = 10
-FILE_FINDER_WIDTH = 30
-SUBPROCESS_TIMEOUT = 10
+MAX_UNDO = settings.get("max_undo", 100)
+TERMINAL_HEIGHT = settings.get("terminal_height", 10)
+FILE_FINDER_WIDTH = settings.get("file_finder_width", 30)
+SUBPROCESS_TIMEOUT = settings.get("subprocess_timeout", 30)
+SCROLL_MARGIN = settings.get("scroll_margin", 5)
+TAB_WIDTH = settings.get("tab_width", 4)
 
 # Placeholder filenames
 NEW_FILE_NAME = "[new]"

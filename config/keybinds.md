@@ -1,43 +1,41 @@
-# Void — Keybind Reference
+# Void — Keybinding & Command Reference
+
+> **Version:** 0.3.1  
+> **Authors:** Bailey Beber and Soumalya Das
 
 ---
 
-## Modes
+## Mode Overview
 
-Void operates in three primary modes, plus several focus contexts.
+Void is a **modal editor**. Every key means something different depending on which mode you are in. When in doubt, press `ESC` to return to Normal mode.
 
-| Mode | Description |
-|------|-------------|
-| **Normal** | Default mode. Navigate, delete, yank, search, and issue commands. |
-| **Insert** | Text entry mode. Characters are inserted at the cursor. |
-| **Command** | Entered with `:` from Normal mode. Execute editor commands. |
-
-Focus contexts (overlay onto the current mode):
-
-| Context | Toggle | Description |
-|---------|--------|-------------|
-| **Terminal** | `Ctrl+T` | Embedded shell panel at the bottom of the editor. |
-| **File Finder** | `Ctrl+F` | Side panel for browsing and opening files. |
+| Mode | How to Enter | How to Exit | What it Does |
+|------|-------------|-------------|--------------|
+| **Normal** | Press `ESC` from any mode | — (this is the base mode) | Navigate, delete, yank, search, run commands |
+| **Insert** | `i`, `a`, `o`, `O` from Normal | **`ESC`** | Type text into the buffer |
+| **Visual (char)** | `v` from Normal | `ESC` or `v` again | Select characters |
+| **Visual (line)** | `V` from Normal | `ESC` or `V` again | Select whole lines |
+| **Visual (block)** | `Ctrl+V` from Normal | `ESC` or `Ctrl+V` again | Select a rectangular block |
+| **Command** | `:` from Normal | `Enter` (execute) or `ESC` (cancel) | Run editor commands |
+| **Search** | `/` from Normal | `Enter` (search) or `ESC` (cancel) | Search and replace |
 
 ---
 
 ## Splash Screen
 
-These binds are active on the startup splash screen before any file is open.
+These bindings are active on the startup splash screen before any file is open.
 
 | Key | Action |
 |-----|--------|
-| `1`–`9` | Open the corresponding recent file |
-| `Enter` or `Space` | Open an empty buffer |
-| `Escape` | Open an empty buffer |
+| `1`–`8` | Open the corresponding recent file |
+| `Enter` / `Space` / `ESC` | Open an empty buffer |
 | `q` | Quit Void |
-| `Ctrl+F` | Open the file finder |
-| `:` | Enter command mode |
-| Any key (during animation) | Skip the matrix rain animation |
 
 ---
 
 ## Normal Mode
+
+Normal mode is the default. You return here by pressing `ESC` from any other mode.
 
 ### Cursor Movement
 
@@ -47,201 +45,338 @@ These binds are active on the startup splash screen before any file is open.
 | `l` | Move right one character |
 | `j` | Move down one line |
 | `k` | Move up one line |
-| `w` | Jump to the start of the next word |
-| `b` | Jump to the start of the previous word |
-| `0` | Move to the start of the line |
-| `$` | Move to the end of the line |
-| `^` | Move to the first non-whitespace character of the line |
-| `gg` | Jump to the first line of the file |
-| `G` | Jump to the last line of the file |
-| `Arrow Keys` | Move in the corresponding direction (also wraps across lines) |
+| Arrow keys | Move in any direction (also wraps across lines) |
+| `w` | Jump to start of next word |
+| `b` | Jump to start of previous word |
+| `0` | Move to start of line |
+| `$` | Move to end of line |
+| `^` | Move to first non-whitespace character |
+| `gg` | Jump to first line of file |
+| `G` | Jump to last line of file |
+| `Ctrl+D` | Scroll down half a page (cursor moves with view) |
+| `Ctrl+U` | Scroll up half a page (cursor moves with view) |
 
-### Scrolling
-
-| Key | Action |
-|-----|--------|
-| `Ctrl+D` | Scroll down half a page (cursor moves with it) |
-| `Ctrl+U` | Scroll up half a page (cursor moves with it) |
-
-### Editing Actions
+### Entering Insert Mode
 
 | Key | Action |
 |-----|--------|
-| `i` | Enter Insert mode at the cursor |
-| `o` | Open a new line below the cursor and enter Insert mode |
-| `O` | Open a new line above the cursor and enter Insert mode |
-| `x` | Delete the character under the cursor |
-| `p` | Paste clipboard after the current line |
-| `P` | Paste clipboard before the current line |
-| `u` | Undo the last change |
-| `Ctrl+R` | Redo the last undone change |
+| `i` | Insert at cursor |
+| `a` | Insert after cursor (append) |
+| `o` | Open new line below and enter Insert |
+| `O` | Open new line above and enter Insert |
 
-### Delete with Motion (Operator: `d`)
-
-| Key Sequence | Action |
-|--------------|--------|
-| `dd` | Delete the entire current line (yanked to clipboard) |
-| `dw` | Delete from cursor to the start of the next word |
-| `d$` | Delete from cursor to the end of the line |
-| `d0` | Delete from cursor to the start of the line |
-| `dG` | Delete from the current line to the end of the file |
-| `dgg` | Delete from the current line to the top of the file |
-
-### Yank (Copy)
-
-| Key Sequence | Action |
-|--------------|--------|
-| `yy` | Yank (copy) the current line to the clipboard |
-
-### Search and Replace
+### Delete Operators
 
 | Key | Action |
 |-----|--------|
-| `/` | Open the search prompt |
-| `n` | Jump to the next search match |
-| `N` | Jump to the previous search match |
-| `Escape` | Clear search highlights and reset search state |
+| `x` | Delete character under cursor |
+| `dd` | Delete current line (yanked to clipboard) |
+| `dw` | Delete from cursor to start of next word |
+| `d$` | Delete from cursor to end of line |
+| `d0` | Delete from cursor to start of line |
+| `dG` | Delete from current line to end of file |
+| `dgg` | Delete from current line to top of file |
 
-**Search prompt syntax:**
-
-| Pattern | Action |
-|---------|--------|
-| `/query` | Find all occurrences of "query" |
-| `/find/replace/g` | Replace all occurrences of "find" with "replace" |
-| `/find/replace/gc` | Replace with confirmation — prompts at each match |
-
-**Confirmation prompt keys** (when using `/find/replace/gc`):
+### Yank and Paste
 
 | Key | Action |
 |-----|--------|
-| `y` | Replace this match and move to the next |
-| `n` | Skip this match and move to the next |
-| `a` | Replace all remaining matches at once |
-| `q` | Quit the replace operation |
+| `yy` | Yank (copy) current line to clipboard |
+| `p` | Paste after current line |
+| `P` | Paste before current line |
+
+### Undo / Redo
+
+| Key | Action |
+|-----|--------|
+| `u` | Undo last change |
+| `Ctrl+R` | Redo last undone change |
+
+### Visual Mode Entry
+
+| Key | Action |
+|-----|--------|
+| `v` | Enter Visual (character) mode |
+| `V` | Enter Visual (line) mode |
+| `Ctrl+V` | Enter Visual (block) mode |
 
 ### Tab Navigation
 
 | Key | Action |
 |-----|--------|
-| `gt` | Switch to the next tab |
-| `gT` | Switch to the previous tab |
+| `gt` | Switch to next tab |
+| `gT` | Switch to previous tab |
 
-### Command Mode
-
-| Key | Action |
-|-----|--------|
-| `:` | Enter command mode |
-
-**Available commands:**
-
-| Command | Action |
-|---------|--------|
-| `:w` | Save the current file |
-| `:q` | Quit (fails if there are unsaved changes) |
-| `:q!` | Force quit without saving |
-| `:wq` | Save and quit |
-| `:e <filepath>` | Open a file in a new tab (or switch to it if already open) |
-| `:tabnew <filepath>` | Open a file in a new tab |
-| `:tabn` / `:tabnext` | Switch to the next tab |
-| `:tabp` / `:tabprev` | Switch to the previous tab |
-| `:tabc` / `:tabclose` | Close the current tab |
-
-**Inside the command/search prompt:**
+### Search Entry
 
 | Key | Action |
 |-----|--------|
-| `Enter` | Execute the command / confirm the search |
-| `Backspace` | Delete the last character (cancels if empty) |
-| `Escape` | Cancel and return to Normal mode |
+| `/` | Open search prompt |
 
-### Global Toggles
+### Command Entry
 
 | Key | Action |
 |-----|--------|
-| `Ctrl+T` | Toggle the inline terminal (and focus it) |
-| `Ctrl+F` | Toggle the file finder panel (and focus it) |
+| `:` | Open command bar |
 
 ---
 
 ## Insert Mode
 
+> **To exit Insert mode and return to Normal mode: press `ESC`**
+
 | Key | Action |
 |-----|--------|
-| `Escape` | Return to Normal mode |
-| `Arrow Keys` | Move the cursor |
-| `Enter` | Split the line at the cursor with auto-indentation |
-| `Backspace` | Delete the character before the cursor (joins lines at col 0) |
-| `Delete` / `Ctrl+D` | Delete the character under the cursor |
-| `(`, `[`, `{`, `"`, `"` | Auto-insert the matching closing pair |
-| Any printable key | Insert the character at the cursor |
+| `ESC` | Return to Normal mode |
+| Arrow keys | Move cursor without leaving Insert mode |
+| `Enter` | Split line at cursor; auto-indents new line |
+| `Backspace` / `Ctrl+H` | Delete character before cursor; joins lines at column 0 |
+| `Delete` / `Ctrl+D` | Delete character under cursor |
+| `Tab` | Insert indentation (default: 4 spaces, configurable) |
+| `(` `[` `{` `"` `'` | Auto-inserts matching closing character |
+| Any printable character | Inserted at cursor position |
 
-**Auto-indentation behavior:**
-
+**Auto-indent behavior:**
 - New lines inherit the indentation level of the line above.
-- If the previous line ends with `:` (Python block), an extra 4-space indent is added.
+- If the previous line ends with `:` (Python, etc.), an extra 4-space indent is added.
+
+**Smart backspace:**
+- If the cursor is at a position that is a multiple of the indent width and preceded only by spaces, backspace removes a full indent level at once.
+
+---
+
+## Visual Mode
+
+Enter with `v` (char), `V` (line), or `Ctrl+V` (block) from Normal mode.
+
+| Key | Action |
+|-----|--------|
+| `ESC` | Exit Visual, return to Normal |
+| `v` | Toggle Visual (char); exit if already in char mode |
+| `V` | Toggle Visual (line); exit if already in line mode |
+| `Ctrl+V` | Toggle Visual (block); exit if already in block mode |
+| `h j k l` | Extend selection |
+| Arrow keys | Extend selection |
+| `w` / `b` | Extend by word |
+| `0` / `$` | Extend to line start / end |
+| `^` | Extend to first non-blank |
+| `G` | Extend to end of file |
+| `Ctrl+D` / `Ctrl+U` | Extend half page down / up |
+| `d` or `x` | Delete selection, return to Normal |
+| `y` | Yank selection, return to Normal |
+| `c` | Delete selection, enter Insert mode |
+| `>` | Indent selection by one level |
+| `<` | Unindent selection by one level |
+
+---
+
+## Search Mode
+
+Open with `/` from Normal mode.
+
+| Pattern | Action |
+|---------|--------|
+| `/query` | Search for all occurrences of `query` |
+| `/find/replace/g` | Replace all occurrences of `find` with `replace` |
+| `/find/replace/gc` | Replace with confirmation at each match |
+
+| Key | Action |
+|-----|--------|
+| `Enter` | Execute search |
+| `ESC` | Cancel, return to Normal |
+| `n` | Jump to next match (from Normal mode) |
+| `N` | Jump to previous match (from Normal mode) |
+| `ESC` (in Normal) | Clear search highlights |
+
+**Confirmation keys** (active during `/find/replace/gc`):
+
+| Key | Action |
+|-----|--------|
+| `y` | Replace this match, advance to next |
+| `n` | Skip this match, advance to next |
+| `a` | Replace all remaining matches at once |
+| `q` | Quit the replace operation |
+
+---
+
+## Command Mode
+
+Open with `:` from Normal mode. Press `Enter` to execute, `ESC` to cancel.
+
+### File Operations
+
+| Command | Action |
+|---------|--------|
+| `:w` | Save current file |
+| `:w filename` | Save as `filename` |
+| `:saveas filename` | Save as `filename` (alias) |
+| `:e file` | Open `file` (new tab, or switch if already open) |
+| `:tabnew file` | Open `file` in a new tab |
+| `:q` | Quit (prompts if unsaved changes) |
+| `:q!` | Force quit without saving |
+| `:quit` / `:exit` | Same as `:q` |
+| `:quit!` / `:exit!` | Same as `:q!` |
+| `:wq` | Save and quit |
+
+### Tab Management
+
+| Command | Action |
+|---------|--------|
+| `:tabn` / `:tabnext` | Switch to next tab |
+| `:tabp` / `:tabprev` | Switch to previous tab |
+| `:tabc` / `:tabclose` | Close current tab (prompts if unsaved) |
+
+### Themes
+
+| Command | Action |
+|---------|--------|
+| `:theme` | Open interactive theme picker |
+| `:theme <key>` | Apply theme directly by its key |
+
+**Dark theme keys:** `tokyo-night`, `dracula`, `nord`, `gruvbox`, `catppuccin`, `catppuccin-macchiato`, `catppuccin-frappe`, `solarized-dark`, `material`, `monokai`, `one-dark`, `cyberpunk`, `retro-terminal`, `nature`
+
+**Light theme keys:** `tokyo-night-day`, `nord-light`, `gruvbox-light`, `catppuccin-latte`, `solarized-light`, `material-lighter`, `minimalist`, `one-light`, `github-light`, `papercolor-light`, `ayu-light`, `rose-pine-dawn`, `everforest-light`, `kanagawa-lotus`
+
+Examples:
+```
+:theme gruvbox-light
+:theme catppuccin-latte
+:theme tokyo-night
+```
+
+### Settings & Config
+
+| Command | Action |
+|---------|--------|
+| `:settings` | Open settings panel (toggle AI, MCP, animations; set API key) |
+| `:config` | Open `~/.config/void/config.json` in a new tab |
+| `:export file.vdtf` | Export current settings to a dotfile |
+| `:import file.vdtf` | Import settings from a dotfile |
+
+### AI & MCP
+
+| Command | Action |
+|---------|--------|
+| `:ai` | Open AI assistant chat panel |
+| `:ai --mcp=on` | Start MCP server on `http://127.0.0.1:7700` |
+| `:ai --mcp=off` | Stop MCP server |
+| `:explain` | AI explains the current file's code |
+| `:refactor` | AI suggests refactoring improvements |
+| `:debug` | AI helps debug the current file |
+| `:docs` | AI generates docstrings for the current file |
+
+### Terminal
+
+| Command | Action |
+|---------|--------|
+| `:t` / `:terminal` | Toggle integrated terminal panel |
+
+### Help
+
+| Command | Action |
+|---------|--------|
+| `:h` / `:help` | Open full help/keybinding reference screen |
+
+---
+
+## Global Shortcuts
+
+These work from any mode (handled at app level):
+
+| Key | Action |
+|-----|--------|
+| `Ctrl+T` | Toggle integrated terminal panel |
+| `Ctrl+F` | Toggle file finder panel |
+| `Ctrl+S` | Save current file |
+| `Ctrl+W` | Close current tab |
 
 ---
 
 ## Terminal Panel
 
-When the terminal panel is focused (toggled with `Ctrl+T`):
+Toggle with `Ctrl+T`. The terminal runs in a panel at the bottom of the editor.
 
 | Key | Action |
 |-----|--------|
-| `Escape` | Return focus to the editor |
-| `Enter` | Execute the current command |
-| `Backspace` | Delete the last character of the input |
-| `Up Arrow` | Navigate to the previous command in history |
-| `Down Arrow` | Navigate to the next command in history |
-| `Ctrl+N` | Scroll terminal output down |
-| `Ctrl+P` | Scroll terminal output up |
-| Any printable key | Append to the command input |
+| `Enter` | Execute the typed command |
+| `ESC` | Close/hide the terminal panel |
+| Any printable key | Type into the terminal input |
 
-**Built-in terminal behavior:**
-
+**Notes:**
 - `cd <path>` is handled natively to change the working directory.
-- All other commands run via the system shell with a 10-second timeout.
+- All other commands run via the system shell.
+- Subprocess timeout defaults to 30 seconds (configurable in `config.json`).
 
 ---
 
 ## File Finder Panel
 
-When the file finder panel is focused (toggled with `Ctrl+F`):
+Toggle with `Ctrl+F`. A side panel appears on the right for navigating the filesystem.
 
 | Key | Action |
 |-----|--------|
-| `Escape` | Return focus to the editor |
 | `j` / `Down Arrow` | Move selection down |
 | `k` / `Up Arrow` | Move selection up |
-| `Enter` | Open the selected file in a new tab, or navigate into a directory |
+| `Enter` | Open selected file, or navigate into directory |
+| `h` | Go up one directory level |
 | `.` | Toggle visibility of hidden files (dotfiles) |
-| `h` | Go back a directory |
-| `r` | Refresh file finder |
+| `r` | Refresh file listing |
+| `ESC` | Close the file finder, return focus to editor |
+
+---
+
+## Settings Panel (`:settings`)
+
+The settings panel provides GUI toggles for common options:
+
+| Option | Description |
+|--------|-------------|
+| **Theme** | Shows current theme key; use `:theme` to change |
+| **Toggle AI** | Enable/disable the Gemini AI assistant |
+| **Toggle MCP** | Start/stop the MCP HTTP server |
+| **Toggle Animations** | Enable/disable UI animations |
+| **Gemini API Key** | Paste key and click Save Key to persist |
 
 ---
 
 ## Quick Reference Card
 
 ```
-NORMAL                          INSERT
-h j k l .... move cursor        Esc ........ back to Normal
-w b ........ word jump          Enter ...... new line (auto-indent)
-0 $ ^ ...... line start/end     Backspace .. delete behind
-gg / G ..... file top/bottom    ([{"" ...... auto-pair
-Ctrl+D/U ... half-page scroll
-                                TERMINAL (Ctrl+T)
-i .......... enter Insert       Esc ........ back to editor
-o / O ...... open line below/   Enter ...... run command
-             above              Up/Down .... command history
-x .......... delete char        Ctrl+N/P ... scroll output
-dd ......... delete line
-dw d$ d0 ... delete motion      FILE FINDER (Ctrl+F)
-dG / dgg ... delete to end/top  j/k ........ navigate
-yy ......... yank line          Enter ...... open / navigate
-p / P ...... paste after/before h .......... go back a directory
-u .......... undo               r .......... refresh file finder
-Ctrl+R ..... redo              `.`.......... reveal hidden files
-/ .......... search             COMMAND MODE (:)
-n / N ...... next/prev match    :w  :q  :wq  :q!
-gt / gT .... next/prev tab      :e  :tabnew  :tabn  :tabp
+NORMAL MODE                        INSERT MODE
+─────────────────────────────────  ─────────────────────
+h j k l .... move cursor           ESC ......... back to Normal  ← KEY
+w / b ....... word forward/back    Enter ....... new line + indent
+0  $  ^ ..... line start/end/nws   Backspace ... delete before
+gg / G ...... file top/bottom      Tab ......... indent (4 spaces)
+Ctrl+D/U .... half page ↓/↑        ([{"' ....... auto-close pair
+                                   Any char .... insert at cursor
+i ........... insert at cursor
+a ........... insert after         VISUAL MODE
+o / O ....... new line below/above ─────────────────────
+                                   ESC ......... exit to Normal
+x ........... delete char          hjkl/arrows . extend selection
+dd .......... delete line          d / x ....... delete selection
+dw d$ d0 .... delete with motion   y ........... yank selection
+dG / dgg .... delete to end/top    c ........... change selection
+yy .......... yank line            > / < ....... indent/unindent
+p / P ....... paste after/before
+u / Ctrl+R .. undo / redo          SEARCH (/)
+                                   ─────────────────────
+v / V / Ctrl+V  visual modes       /query ...... search
+gt / gT ..... next/prev tab        /f/r/g ...... replace all
+: ........... command mode         /f/r/gc ..... replace w/ confirm
+/ ........... search               n / N ....... next/prev match
+ESC ......... return to Normal     ESC ......... clear highlights
+
+COMMAND MODE (:)                   PANELS
+─────────────────────────────────  ─────────────────────
+:w  :q  :q!  :wq                   Ctrl+T ...... terminal toggle
+:e  :tabnew                        Ctrl+F ...... file finder
+:tabn  :tabp  :tabc                Ctrl+S ...... save
+:theme  :theme <key>               Ctrl+W ...... close tab
+:settings  :config
+:ai  :explain  :refactor
+:debug  :docs
+:export f.vdtf  :import f.vdtf
+:h  :help
 ```

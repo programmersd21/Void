@@ -1,56 +1,50 @@
-# Copyright 2025 Bailey Lane-Beber
+# Copyright 2026 Bailey Beber and Soumalya Das
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
-import curses
+"""
+Search state — pure Python, no curses dependency.
+The old curses-based search_prompt() is kept for backward compatibility but
+gated so it only runs when curses is available (legacy mode).
+"""
+
 from config.keys import KEY_ESCAPE, KEY_BACKSPACE_CODES, KEY_ENTER
+
 
 class SearchState:
     def __init__(self):
-        self.query = ""
-        self.matches = []
-        self.match_index = -1
-        self.active = False
-        self.confirming = False
-        self.replacement = ""
+        self.query        = ""
+        self.matches      = []
+        self.match_index  = -1
+        self.active       = False
+        self.confirming   = False
+        self.replacement  = ""
 
     def reset(self):
-        self.query = ""
-        self.matches = []
-        self.match_index = -1
-        self.active = False
-        self.confirming = False
-        self.replacement = ""
+        self.query        = ""
+        self.matches      = []
+        self.match_index  = -1
+        self.active       = False
+        self.confirming   = False
+        self.replacement  = ""
 
     def find_all(self, buffer, query):
-        self.query = query
-        self.matches = []
+        self.query       = query
+        self.matches     = []
         self.match_index = -1
-
         if not query:
             self.active = False
             return
-
         for row_idx in range(len(buffer)):
             line = buffer[row_idx]
-            col = 0
+            col  = 0
             while col <= len(line) - len(query):
                 pos = line.find(query, col)
                 if pos == -1:
                     break
                 self.matches.append((row_idx, pos))
                 col = pos + 1
-
         self.active = True
 
     def next_match(self, cursor, window, buffer):
@@ -82,8 +76,8 @@ class SearchState:
         if self.match_index < 0 or self.match_index >= len(self.matches):
             return
         row, col = self.matches[self.match_index]
-        cursor.row = row
-        cursor.col = col
+        cursor.row      = row
+        cursor.col      = col
         cursor._col_hint = col
         if cursor.row < window.row:
             window.row = cursor.row
@@ -95,7 +89,7 @@ class SearchState:
         if not self.matches:
             return "[no matches]"
         return f"[{self.match_index + 1}/{len(self.matches)}]"
-    
+
     def replace_all(self, buffer, replacement):
         if not self.matches or not self.query:
             return 0
@@ -108,12 +102,20 @@ class SearchState:
         return count
 
 
-# Global search state shared across modules
+# Global search state
 search_state = SearchState()
 
 
-# Prompt the user for a search query on the status line
 def search_prompt(stdscr, window, restore_timeout=100):
+    """
+    Legacy curses-based search prompt. Only used when running in pure-curses
+    mode. Not called by the Textual UI (which uses its own Input widget).
+    """
+    try:
+        import curses
+    except ImportError:
+        return ""
+
     stdscr.timeout(-1)
     curses.curs_set(1)
     stdscr.addstr(window.n_rows, 0, "/" + " " * (window.n_cols - 1))
@@ -139,5 +141,6 @@ def search_prompt(stdscr, window, restore_timeout=100):
         display = "/" + query
         stdscr.addstr(window.n_rows, 0, display + " " * (window.n_cols - len(display)))
         stdscr.move(window.n_rows, len(display))
+
     stdscr.timeout(restore_timeout)
     return query
